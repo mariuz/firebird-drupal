@@ -57,7 +57,7 @@ class DatabaseConnection_firebird extends DatabaseConnection {
     $query = str_replace('"VALUE"S','VALUES',$query);
     // There is no int NULL type
     $query = str_replace('int NULL','int',$query);
-//    $query = str_replace('CREATE','RECREATE',$query);
+    $query = str_replace('CREATE','RECREATE',$query);
 
 
     // Treat CACHE keyword.
@@ -75,13 +75,17 @@ class DatabaseConnection_firebird extends DatabaseConnection {
 
     // Replace keywords.
     $query = $this->replaceKeywords( $query );
-    
+define  (DEBUG ,false);
     //DEBUGGING
-#    echo $query . "<br>";
-#    foreach( $args as $place => $arg ) {
-#     echo "   " . $place . " => " . $arg . "<br>";
-#    }
-#    echo "<br><br>";
+
+   if (DEBUG==true)
+{    
+    echo $query . "<br>";
+    foreach( $args as $place => $arg ) {
+     echo "   " . $place . " => " . $arg . "<br>";
+    }
+    echo "<br><br>";
+}
     //END DEBUGGING
 
     try {
