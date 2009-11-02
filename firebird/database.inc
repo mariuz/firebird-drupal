@@ -12,12 +12,13 @@
  */
 
 class DatabaseConnection_firebird extends DatabaseConnection {
-
+  public  $debug_query = false;
   public function __construct(array $connection_options = array()) {
     // This driver defaults to transaction support, except if explicitly passed FALSE.
     //$this->transactionSupport = !isset($connection_options['transactions']) || $connection_options['transactions'] === FALSE;
     // This driver defaults to non transaction support.
-    $this->transactionSupport = !empty($connection_option['transactions']);
+//    $this->transactionSupport = !empty($connection_option['transactions']);
+    $this->transactionSupport = true;	
 
     // Default to TCP connection on port 3050.
     if (empty($connection_options['port'])) {
@@ -57,7 +58,7 @@ class DatabaseConnection_firebird extends DatabaseConnection {
     $query = str_replace('"VALUE"S','VALUES',$query);
     // There is no int NULL type
     $query = str_replace('int NULL','int',$query);
-    $query = str_replace('CREATE','RECREATE',$query);
+    $query = str_replace('CRATE','RECREATE',$query);
 
 
     // Treat CACHE keyword.
@@ -75,10 +76,9 @@ class DatabaseConnection_firebird extends DatabaseConnection {
 
     // Replace keywords.
     $query = $this->replaceKeywords( $query );
-define  (DEBUG ,false);
     //DEBUGGING
 
-   if (DEBUG==true)
+   if ($this->debug_query===true)
 {    
     echo $query . "<br>";
     foreach( $args as $place => $arg ) {
@@ -91,7 +91,7 @@ define  (DEBUG ,false);
     try {
       if ($query instanceof DatabaseStatementInterface) {
         $stmt = $query;
-	var_dump ($this);
+        if ($this->debug_query===true) var_dump ($this);
 	$this->startTransaction();
         $stmt->execute(NULL, $options);
 	$this->commit();
