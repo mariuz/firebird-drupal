@@ -3,7 +3,7 @@
 
 /**
  * @file
- * Database interface code for Firebird/Interbase database servers.
+ * Database interface code for Firebird database servers.
  */
 
 /**
@@ -12,7 +12,7 @@
  */
 
 class DatabaseConnection_firebird extends DatabaseConnection {
-  public  $debug_query = false;
+  public  $debug_query = true;
   public function __construct(array $connection_options = array()) {
     // This driver defaults to transaction support, except if explicitly passed FALSE.
     //$this->transactionSupport = !isset($connection_options['transactions']) || $connection_options['transactions'] === FALSE;
@@ -28,7 +28,8 @@ class DatabaseConnection_firebird extends DatabaseConnection {
     $dsn = 'firebird:host=' . $connection_options['host'] . ';port=' . $connection_options['port'] . ';dbname=' . $connection_options['database'];
     parent::__construct($dsn, $connection_options['username'], $connection_options['password'], array(
       // Force column names to upper case.
-      PDO::ATTR_CASE => PDO::CASE_UPPER,
+	    PDO::ATTR_CASE => PDO::CASE_UPPER,
+	    PDO::ATTR_AUTOCOMMIT => FALSE
     ));
   }
 
@@ -58,7 +59,7 @@ class DatabaseConnection_firebird extends DatabaseConnection {
     $query = str_replace('"VALUE"S','VALUES',$query);
     // There is no int NULL type
     $query = str_replace('int NULL','int',$query);
-    $query = str_replace('CRATE','RECREATE',$query);
+    $query = str_replace('CREATE','RECREATE',$query);
 
 
     // Treat CACHE keyword.
@@ -92,18 +93,17 @@ class DatabaseConnection_firebird extends DatabaseConnection {
       if ($query instanceof DatabaseStatementInterface) {
         $stmt = $query;
         if ($this->debug_query===true) var_dump ($this);
-	$this->startTransaction();
+	$this->beginTransaction();
         $stmt->execute(NULL, $options);
 	$this->commit();
 
       }
       else {
-
-        $modified = $this->expandArguments($query, $args);
-        $stmt = $this->prepareQuery($query, !$modified);
-	$this->startTransaction();
-	$stmt->execute($args, $options);
-	$this->commit();
+	      $modified = $this->expandArguments($query, $args);
+	      $this->beginTransaction();
+	      $stmt = $this->prepareQuery($query, !$modified);
+	      $stmt->execute($args, $options);
+	      $this->commit();
       }
 
       switch ($options['return']) {
@@ -121,7 +121,6 @@ class DatabaseConnection_firebird extends DatabaseConnection {
       }
     }
     catch (PDOException $e) {
-      _db_check_install_needed();
       if ($options['throw_exception']) {
         if ($query instanceof DatabaseStatementInterface) {
           $query_string = $stmt->getQueryString();

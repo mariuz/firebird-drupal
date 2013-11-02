@@ -76,7 +76,7 @@ class InsertQuery_firebird extends InsertQuery {
 }
 
 /**
- * Firebird/Interbase specific implementation of UpdateQuery.
+ * Firebird specific implementation of UpdateQuery.
  */
 class UpdateQuery_firebird extends UpdateQuery {
 
