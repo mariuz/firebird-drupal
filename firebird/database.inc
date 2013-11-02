@@ -168,6 +168,29 @@ class DatabaseConnection_firebird extends DatabaseConnection {
     // (?<!text) is a negative look-behind (no need to rewrite queries that already use DISTINCT).
     return preg_replace('/(SELECT.*)(?:'. $table .'\.|\s)(?<!DISTINCT\()(?<!DISTINCT\('. $table .'\.)'. $field .'(.*FROM )/AUsi', '\1 '. $field_to_select .'\2', $query);
   }
+/**
+   * Retrive a the next id in a sequence.
+   *
+   * Firebird has built in sequences. We'll use these instead of inserting
+   * and updating a sequences table.
+   */
+  public function nextId($existing = 0) {
+
+    // Retrive the name of the sequence. This information cannot be cached
+    // because the prefix may change, for example, like it does in simpletests.
+    $sequence_name = $this->makeSequenceName('sequences', 'value');
+
+    // When PostgreSQL gets a value too small then it will lock the table,
+    // retry the INSERT and if it's still too small then alter the sequence.
+    $id = $this->query("SELECT nextvalue for '" . $sequence_name . "'")->fetchField();
+
+
+    // Reset the sequence to a higher value than the existing id.
+    $this->query("ALTER SEQUENCE " . $sequence_name . " RESTART WITH " . ($existing + 1));
+
+    return $id;
+  }
+
 }
 
 /**
