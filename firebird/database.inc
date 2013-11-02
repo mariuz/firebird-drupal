@@ -180,13 +180,8 @@ class DatabaseConnection_firebird extends DatabaseConnection {
     // because the prefix may change, for example, like it does in simpletests.
     $sequence_name = $this->makeSequenceName('sequences', 'value');
 
-    // When PostgreSQL gets a value too small then it will lock the table,
     // retry the INSERT and if it's still too small then alter the sequence.
     $id = $this->query("SELECT nextvalue for '" . $sequence_name . "'")->fetchField();
-
-
-    // Reset the sequence to a higher value than the existing id.
-    $this->query("ALTER SEQUENCE " . $sequence_name . " RESTART WITH " . ($existing + 1));
 
     return $id;
   }
