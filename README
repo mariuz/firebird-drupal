@@ -1,0 +1,50 @@
+You need pdo firebird enabled
+
+http://mapopa.blogspot.ro/2009/04/php5-and-firebird-pdo-on-ubuntu-hardy.html
+
+also the following dependencies
+
+sudo apt-get install libapache2-mod-php5 php5-interbase firebird2.5-super git-core
+
+
+Firebird server needs to be installed 
+
+https://help.ubuntu.com/community/Firebird2.5
+
+ 
+
+ cd /var/www
+  
+
+  sudo wget http://ftp.drupal.org/files/projects/drupal-7.x-dev.tar.gz
+
+   
+
+   tar -jxvf drupal-7.x-dev.tar.gz    
+
+    firebird  drupal 
+    module is now in git
+
+
+    http://gitorious.org/firebird-drupal/firebird-drupal
+
+    git clone http://git.gitorious.org/firebird-drupal/firebird-drupal.git
+
+     
+
+     mv firebird-drupal/firebird  drupal-7.x-dev/includes/database/
+
+      
+
+      sudo chown -R www-data.www-data ../www
+
+       
+
+       load in browser
+
+
+       http://localhost/drupal-7.x-dev/install.php
+
+       create db and use for database name
+
+	/var/lib/firebird/2.5/data/drupal7.fdb
