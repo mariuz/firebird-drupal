@@ -1,6 +1,4 @@
 <?php
-// $Id$
-
 /**
  * @file
  * Database interface code for Firebird database servers.
@@ -18,7 +16,7 @@ class DatabaseConnection_firebird extends DatabaseConnection {
     //$this->transactionSupport = !isset($connection_options['transactions']) || $connection_options['transactions'] === FALSE;
     // This driver defaults to non transaction support.
 //    $this->transactionSupport = !empty($connection_option['transactions']);
-    $this->transactionSupport = true;	
+    $this->transactionSupport = true;
 
     // Default to TCP connection on port 3050.
     if (empty($connection_options['port'])) {
@@ -80,7 +78,7 @@ class DatabaseConnection_firebird extends DatabaseConnection {
     //DEBUGGING
 
    if ($this->debug_query===true)
-{    
+{
     echo $query . "<br>";
     foreach( $args as $place => $arg ) {
      echo "   " . $place . " => " . $arg . "<br>";

@@ -1,7 +1,6 @@
 <?php
-// $Id$
 
-// Firebird/Interbase specific install functions
+// Firebird specific install functions
 
 class DatabaseTasks_firebird extends DatabaseTasks {
   protected $pdoDriver = 'firebird';
@@ -9,4 +8,3 @@ class DatabaseTasks_firebird extends DatabaseTasks {
     return 'Firebird';
   }
 }
-

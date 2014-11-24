@@ -1,6 +1,4 @@
 <?php
-// $Id$
-
 /**
  * @file
  * Database schema code for Firebird/Interbase database servers.
