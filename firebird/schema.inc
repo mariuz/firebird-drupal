@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Database schema code for Firebird/Interbase database servers.
+ * Database schema code for Firebird database servers.
  */
 
 
@@ -218,12 +218,12 @@ class DatabaseSchema_firebird extends DatabaseSchema {
     return $triggers;
   }
 
-  // TODO: Firebird/Interbase doesn"t allow to rename tables.
+  // TODO: Firebird doesn"t allow to rename tables.
   public function renameTable(&$ret, $table, $new_name) {
     $ret[] = update_sql("ALTER TABLE " . $table . " RENAME TO ". $new_name);
   }
 
-  // TODO: Firebird/Interbase may require to drop constraints before drop table.
+  // TODO: Firebird may require to drop constraints before drop table.
   public function dropTable(&$ret, $table) {
     $ret[] = update_sql("DROP TABLE ". $table);
   }
