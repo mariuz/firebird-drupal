@@ -13,11 +13,11 @@
 class DatabaseSchema_firebird extends DatabaseSchema {
 
   public function tableExists($table) {
-    return (bool) $this->connection->query("SELECT RDB$RELATION_NAME FROM RDB$RELATIONS WHERE RDB$RELATION_NAME = ". $table, array(), array())->fetchField();
+    return (bool) $this->connection->query('SELECT RDB$RELATION_NAME FROM RDB$RELATIONS WHERE RDB$RELATION_NAME = '. $table, array(), array())->fetchField();
   }
 
   public function columnExists($table, $column) {
-    return (bool) $this->connection->query("SELECT RDB$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE RDB$RELATION_NAME = ". $this->connection->escapeTable($table) ."' AND RDB$FIELD_NAME = ". $this->connection->escapeTable($column), array(), array())->fetchField();
+    return (bool) $this->connection->query('SELECT RDB$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE RDB$RELATION_NAME = '. $this->connection->escapeTable($table) .'\' AND RDB$FIELD_NAME = '. $this->connection->escapeTable($column), array(), array())->fetchField();
   }
 
 
@@ -219,26 +219,30 @@ class DatabaseSchema_firebird extends DatabaseSchema {
   }
 
   // TODO: Firebird doesn"t allow to rename tables.
-  public function renameTable(&$ret, $table, $new_name) {
-    $ret[] = update_sql("ALTER TABLE " . $table . " RENAME TO ". $new_name);
+  public function renameTable($table, $new_name) {
+    update_sql("ALTER TABLE " . $table . " RENAME TO ". $new_name);
+    return TRUE;
   }
 
   // TODO: Firebird may require to drop constraints before drop table.
-  public function dropTable(&$ret, $table) {
-    $ret[] = update_sql("DROP TABLE ". $table);
+  public function dropTable($table) {
+    update_sql("DROP TABLE ". $table);
+    return TRUE;
   }
 
-  public function addField(&$ret, $table, $field, $spec, $keys_new = array()) {
+  public function addField($table, $field, $spec, $keys_new = array()) {
     $query = "ALTER TABLE ". $table ." ADD ";
     $query .= $this->createFieldSql($field, $this->processField($spec));
-    $ret[] = update_sql($query);
+    update_sql($query);
+    return TRUE;
   }
 
-  public function dropField(&$ret, $table, $field) {
-    $ret[] = update_sql("ALTER TABLE ". $table ." DROP ". $field);
+  public function dropField($table, $field) {
+    update_sql("ALTER TABLE ". $table ." DROP ". $field);
+    return TRUE;
   }
 
-  public function fieldSetDefault(&$ret, $table, $field, $default) {
+  public function fieldSetDefault($table, $field, $default) {
     if (is_null($default)) {
       $default = "NULL";
     }
@@ -246,45 +250,54 @@ class DatabaseSchema_firebird extends DatabaseSchema {
       $default = is_string($default) ? "\"$default\"" : $default;
     }
 
-    $ret[] = update_sql("ALTER TABLE ". $table ." ALTER COLUMN ". $field ." SET DEFAULT ". $default);
+    update_sql("ALTER TABLE ". $table ." ALTER COLUMN ". $field ." SET DEFAULT ". $default);
   }
 
-  public function fieldSetNoDefault(&$ret, $table, $field) {
-    $ret[] = update_sql("ALTER TABLE ". $table ." ALTER COLUMN ". $field ." DROP DEFAULT");
+  public function fieldSetNoDefault($table, $field) {
+    update_sql("ALTER TABLE ". $table ." ALTER COLUMN ". $field ." DROP DEFAULT");
   }
 
-  public function addPrimaryKey(&$ret, $table, $fields) {
-    $ret[] = update_sql("ALTER TABLE ". $table ." ADD CONSTRAINT PK_". $table ." PRIMARY KEY (" . $this->createKeysSqlHelper($fields) . ")");
+  public function indexExists($table, $name) {
+    
+    return (bool) $this->connection->query("SELECT RDB$INDEX_NAME FROM RDB$INDICES where RDB$UNIQUE_FLAG IS NULL AND RDB$FOREIGN_KEY IS NULL and RDB$INDEX_NAME=$name and RDB$RELATION_NAME=$table")->fetchField();
   }
 
-  public function dropPrimaryKey(&$ret, $table) {
-    $ret[] = update_sql("ALTER TABLE ". $table ." DROP CONSTRAINT PK_". $table);
+
+  public function addPrimaryKey($table, $fields) {
+    update_sql("ALTER TABLE ". $table ." ADD CONSTRAINT PK_". $table ." PRIMARY KEY (" . $this->createKeysSqlHelper($fields) . ")");
   }
 
-  public function addUniqueKey(&$ret, $table, $name, $fields) {
-    $ret[] = update_sql("ALTER TABLE ". $table ." ADD CONSTRAINT U_". substr($table,0,10) ."_" . substr($name,0,10) . " UNIQUE (" . $this->createKeysSqlHelper($fields) . ")");
+  public function dropPrimaryKey($table) {
+    update_sql("ALTER TABLE ". $table ." DROP CONSTRAINT PK_". $table);
+    return TRUE;
   }
 
-  public function dropUniqueKey(&$ret, $table, $name) {
-    $ret[] = update_sql("ALTER TABLE ". $table ." DROP CONSTRAINT ". $name);
+  public function addUniqueKey ($table, $name, $fields) {
+    update_sql("ALTER TABLE ". $table ." ADD CONSTRAINT U_". substr($table,0,10) ."_" . substr($name,0,10) . " UNIQUE (" . $this->createKeysSqlHelper($fields) . ")");
   }
 
-  public function addIndex(&$ret, $table, $name, $fields) {
+  public function dropUniqueKey($table, $name) {
+    update_sql("ALTER TABLE ". $table ." DROP CONSTRAINT ". $name);
+    return TRUE;
+  }
+
+  public function addIndex($table, $name, $fields) {
     $query = "CREATE INDEX I_". substr($name,0,10) ."_". substr($index,0,10) ." ON ". $table ."(" . $this->createKeysSqlHelper($fields) . ")";
-    $ret[] = update_sql($query);
+    update_sql($query);
   }
 
-  public function dropIndex(&$ret, $table, $name) {
+  public function dropIndex($table, $name) {
     $ret[] = update_sql("DROP INDEX ". $name);
+    return TRUE;
   }
 
   // TODO
-  public function changeField(&$ret, $table, $field, $field_new, $spec, $keys_new = array()) {
+  public function changeField($table, $field, $field_new, $spec, $keys_new = array()) {
     $sql = "ALTER TABLE ". $table ." ALTER COLUMN ". $field ." ". $this->createFieldSql($field_new, $this->processField($spec));
     if (count($keys_new)) {
       $sql .= ", ADD " . implode(", ADD ", $this->createKeysSql($keys_new));
     }
-    $ret[] = update_sql($sql);
+    update_sql($sql);
   }
 
 }
