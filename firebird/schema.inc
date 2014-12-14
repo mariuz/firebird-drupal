@@ -220,17 +220,36 @@ class DatabaseSchema_firebird extends DatabaseSchema {
 
   // TODO: Firebird doesn"t allow to rename tables.
   public function renameTable($table, $new_name) {
+   if (!$this->tableExists($table)) {
+      throw new DatabaseSchemaObjectDoesNotExistException(t("Cannot rename @table to @table_new: table @table doesn't exist.", array('@table' => $table, '@table_new' => $new_name)));
+    }
+    if ($this->tableExists($new_name)) {
+      throw new DatabaseSchemaObjectExistsException(t("Cannot rename @table to @table_new: table @table_new already exists.", array('@table' => $table, '@table_new' => $new_name)));
+    }
+
     update_sql("ALTER TABLE " . $table . " RENAME TO ". $new_name);
     return TRUE;
   }
 
   // TODO: Firebird may require to drop constraints before drop table.
   public function dropTable($table) {
+
+  if (!$this->tableExists($table)) {
+      return FALSE;
+   }
     update_sql("DROP TABLE ". $table);
     return TRUE;
   }
 
   public function addField($table, $field, $spec, $keys_new = array()) {
+
+   if (!$this->tableExists($table)) {
+      throw new DatabaseSchemaObjectDoesNotExistException(t("Cannot add field @table.@field: table doesn't exist.", array('@field' => $field, '@table' => $table)));
+    }
+    if ($this->fieldExists($table, $field)) {
+      throw new DatabaseSchemaObjectExistsException(t("Cannot add field @table.@field: field already exists.", array('@field' => $field, '@table' => $table)));
+    }
+
     $query = "ALTER TABLE ". $table ." ADD ";
     $query .= $this->createFieldSql($field, $this->processField($spec));
     update_sql($query);
@@ -238,11 +257,18 @@ class DatabaseSchema_firebird extends DatabaseSchema {
   }
 
   public function dropField($table, $field) {
+   if (!$this->fieldExists($table, $field)) {
+      return FALSE;
+    }
+
     update_sql("ALTER TABLE ". $table ." DROP ". $field);
     return TRUE;
   }
 
   public function fieldSetDefault($table, $field, $default) {
+    if (!$this->fieldExists($table, $field)) {
+      throw new DatabaseSchemaObjectDoesNotExistException(t("Cannot set default value of field @table.@field: field doesn't exist.", array('@table' => $table, '@field' => $field)));
+    }
     if (is_null($default)) {
       $default = "NULL";
     }
@@ -254,6 +280,10 @@ class DatabaseSchema_firebird extends DatabaseSchema {
   }
 
   public function fieldSetNoDefault($table, $field) {
+   if (!$this->fieldExists($table, $field)) {
+      throw new DatabaseSchemaObjectDoesNotExistException(t("Cannot remove default value of field @table.@field: field doesn't exist.", array('@table' => $table, '@field' => $field)));
+    }
+
     update_sql("ALTER TABLE ". $table ." ALTER COLUMN ". $field ." DROP DEFAULT");
   }
 
