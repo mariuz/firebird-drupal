@@ -26,9 +26,9 @@ https://help.ubuntu.com/community/Firebird2.5
     module is now in git
 
 
-    http://gitorious.org/firebird-drupal/firebird-drupal
+    https://github.com/mariuz/firebird-drupal
 
-    git clone http://git.gitorious.org/firebird-drupal/firebird-drupal.git
+    git clone https://github.com/mariuz/firebird-drupal.git
 
      
 
