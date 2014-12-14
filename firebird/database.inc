@@ -15,6 +15,9 @@ class DatabaseConnection_firebird extends DatabaseConnection {
     
 	// This driver defaults to transaction support, except if explicitly passed FALSE.
     	$this->transactionSupport = !isset($connection_options['transactions']) || ($connection_options['transactions'] !== FALSE);
+       // Firebird doesn't support transactional DDL yet.
+    $this->transactionalDDLSupport = FALSE;
+
 
     // Default to TCP connection on port 3050.
     if (empty($connection_options['port'])) {

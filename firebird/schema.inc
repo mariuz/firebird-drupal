@@ -259,7 +259,7 @@ class DatabaseSchema_firebird extends DatabaseSchema {
 
   public function indexExists($table, $name) {
     
-    return (bool) $this->connection->query("SELECT RDB$INDEX_NAME FROM RDB$INDICES where RDB$UNIQUE_FLAG IS NULL AND RDB$FOREIGN_KEY IS NULL and RDB$INDEX_NAME=$name and RDB$RELATION_NAME=$table")->fetchField();
+    return (bool) $this->connection->query("SELECT RDB\$INDEX_NAME FROM RDB\$INDICES where RDB\$UNIQUE_FLAG IS NULL AND RDB\$FOREIGN_KEY IS NULL and RDB\$INDEX_NAME=$name and RDB\$RELATION_NAME=$table")->fetchField();
   }
 
 
