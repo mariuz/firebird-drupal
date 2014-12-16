@@ -31,4 +31,4 @@ http://localhost/drupal-7.x-dev/install.php
 
 create an empty db with isql-fb/flamerobin and use for database name
 
-var/lib/firebird/2.5/data/drupal7.fdb
+/var/lib/firebird/2.5/data/drupal7.fdb
