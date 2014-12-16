@@ -6,45 +6,29 @@ also the following dependencies
 
 sudo apt-get install libapache2-mod-php5 php5-interbase firebird2.5-super git-core
 
-
 Firebird server needs to be installed 
 
 https://help.ubuntu.com/community/Firebird2.5
 
- 
+cd /var/www
 
- cd /var/www
-  
+sudo wget http://ftp.drupal.org/files/projects/drupal-7.x-dev.tar.gz
 
-  sudo wget http://ftp.drupal.org/files/projects/drupal-7.x-dev.tar.gz
+tar -jxvf drupal-7.x-dev.tar.gz    
 
-   
+firebird  drupal  module is now in git
+    
+https://github.com/mariuz/firebird-drupal
 
-   tar -jxvf drupal-7.x-dev.tar.gz    
+git clone https://github.com/mariuz/firebird-drupal.git
 
-    firebird  drupal 
-    module is now in git
+mv firebird-drupal/firebird  drupal-7.x-dev/includes/database/
+sudo chown -R www-data.www-data ../www
 
+load in browser
 
-    https://github.com/mariuz/firebird-drupal
+http://localhost/drupal-7.x-dev/install.php
 
-    git clone https://github.com/mariuz/firebird-drupal.git
+create an empty db with isql-fb/flamerobin and use for database name
 
-     
-
-     mv firebird-drupal/firebird  drupal-7.x-dev/includes/database/
-
-      
-
-      sudo chown -R www-data.www-data ../www
-
-       
-
-       load in browser
-
-
-       http://localhost/drupal-7.x-dev/install.php
-
-       create db and use for database name
-
-	/var/lib/firebird/2.5/data/drupal7.fdb
+var/lib/firebird/2.5/data/drupal7.fdb
